@@ -1,3 +1,4 @@
+
 var data = [
   {author: "Pete Hunt", text: "This is one comment"},
   {author: "Jordan Walke", text: "This is *another* comment"}
@@ -51,8 +52,8 @@ var CommentForm = React.createClass({
   render: function() {
     return (
       <form className="commentForm" onSubmit={this.handleSubmit}>
-        <input type="text" placeholder="Your name" />
-        <input type="text" placeholder="Say something..." />
+        <input type="text" placeholder="Your name" ref="author" />
+        <input type="text" placeholder="Say something..." ref="text" />
         <input type="submit" value="Post" />
       </form>
       );
@@ -79,18 +80,20 @@ var CommentBox = React.createClass({
   handleCommentSubmit: function(comment){
     var comments = this.state.data;
     var newComments = comments.concat([comment]);
-    this.setState({data: newComments});
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: comment,
-      success: function(data) {
-        this.setState({data: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
+    this.setState({data: newComments}, function() {
+      console.log(comment);
+      $.ajax({
+        url: this.props.url,
+        dataType: 'json',
+        type: 'POST',
+        data: comment,
+        success: function(data) {
+          this.setState({data: data});
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+      });
     });
   },
   componentDidMount: function() {
@@ -108,7 +111,9 @@ var CommentBox = React.createClass({
   }
 });
 
+var commentsURL = path.join
+
 React.render(
-  <CommentBox url="comments.json" pollInterval={2000} />,
+  <CommentBox url="/comments.json" pollInterval={2000} />,
   document.getElementById('content')
 );
